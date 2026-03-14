@@ -1,14 +1,15 @@
 #!/bin/sh
 
-# Instructions:
+# ? Instructions:
 # 1. Save this script as .git/hooks/pre-commit in your git repository.
 # 2. Make the script executable by running: chmod +x .git/hooks/pre-commit
 # 3. Customize the commands in the script as needed for your project.
 # This script will run the specified commands before allowing a commit to proceed.
 
-# Purpose:
-# This pre-commit hook is designed to run a series of checks (like linters, tests, or build commands) before allowing a commit to be made. If any of the checks fail
-# the commit will be aborted, and any unstaged changes will be stashed and then restored after the checks are complete. This ensures that the checks are run on a clean working directory without any unstaged changes interfering.
+# ? Purpose:
+# This pre-commit hook is designed to run a series of checks (like linters, tests, or build commands) before allowing a commit to be made. 
+# If any of the checks fail the commit will be aborted, and any unstaged changes will be stashed and then restored after the checks are complete. 
+# This ensures that the checks are run on a clean working directory without any unstaged changes interfering.
 
 # if one of the commands fails, fail the commit
 set -e
