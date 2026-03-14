@@ -1,0 +1,54 @@
+#!/bin/sh
+
+# Instructions:
+# 1. Save this script as .git/hooks/pre-commit in your git repository.
+# 2. Make the script executable by running: chmod +x .git/hooks/pre-commit
+# 3. Customize the commands in the script as needed for your project.
+# This script will run the specified commands before allowing a commit to proceed.
+
+# Purpose:
+# This pre-commit hook is designed to run a series of checks (like linters, tests, or build commands) before allowing a commit to be made. If any of the checks fail
+# the commit will be aborted, and any unstaged changes will be stashed and then restored after the checks are complete. This ensures that the checks are run on a clean working directory without any unstaged changes interfering.
+
+# if one of the commands fails, fail the commit
+set -e
+
+# flag for running the cleanup()
+stashed=0
+
+# restore stashed changes if we had to stash them
+cleanup() {
+  if [ $stashed -eq 1 ]; then
+    echo "Restoring stashed changes..."
+    git stash pop
+  fi
+}
+trap cleanup EXIT
+
+# what commands to run before stashing changes
+# sample only, you can add more commands here
+echo "Running pre-commit checks..."
+# for example, you can run linters, tests, or any other checks here
+# if any of these commands fail, the commit will be aborted and the changes will not be
+nvm use 18
+npm install
+npm run lint
+
+git stash push --keep-index --include-untracked -m "pre-commit: stashing changes"
+stashed=1
+
+# what commands to run after stashing changes
+# sample only, you can add more commands here
+# if any of these commands fail, the commit will be aborted and the changes will be restored
+# this is to ensure that what we run here is always run on a clean working directory
+# without the unstaged changes that might interfere with the checks
+npm run test
+npm run build
+# sometimes you might want to delete build artifacts or other generated files here, but be careful with that
+# for example, you can run a command to clean up build artifacts here
+# rm -rf dist
+
+# if we reach this point, it means all checks have passed and we can proceed with the commit
+# the stashed changes will be restored in the cleanup() function when the script exits
+git stash pop
+stashed=0
